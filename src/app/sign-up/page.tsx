@@ -108,7 +108,7 @@ export default function SignUp() {
                   email,
                   password,
                   name: `${firstName} ${lastName}`,
-                  callbackURL: "/sign-in",
+                  callbackURL: "/",
                   fetchOptions: {
                     onResponse: () => {
                       setLoading(false);

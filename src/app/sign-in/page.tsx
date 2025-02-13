@@ -38,7 +38,6 @@ export default function SignIn() {
       email,
       password,
       callbackURL: "/",
-
       fetchOptions: {
         onResponse: () => {
           setLoading(false);
@@ -88,6 +87,16 @@ export default function SignIn() {
                     await authClient.forgetPassword({
                       email,
                       redirectTo: "/reset-password",
+                      fetchOptions: {
+                        onResponse: () => {
+                          toast.info(
+                            "check your email from the reset password link",
+                          );
+                        },
+                        onError: (ctx) => {
+                          toast.error(ctx.error.message);
+                        },
+                      },
                     });
                   }}
                 >
