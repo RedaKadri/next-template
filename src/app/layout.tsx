@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 
+import { Toaster } from "sonner";
+
 import { ThemeProvider } from "@/components/ui/theme/theme-provider";
 
 import "./globals.css";
@@ -16,7 +18,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className="antialiased">
+      <body className="h-screen antialiased">
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
@@ -24,6 +26,7 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           {children}
+          <Toaster richColors />
         </ThemeProvider>
       </body>
     </html>
