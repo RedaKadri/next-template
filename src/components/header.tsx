@@ -31,7 +31,7 @@ async function Header() {
       <div className="flex justify-center gap-4">
         {userSession && (
           <form action={onSubmit}>
-            <Button variant="ghost" size={"icon"} type="submit">
+            <Button variant="outline" size={"icon"} type="submit">
               <IconLogout />
             </Button>
           </form>

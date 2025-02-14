@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 
-import { Button } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import authClient from "@/lib/auth-client";
 
 export default function Home() {
@@ -11,19 +12,19 @@ export default function Home() {
     return <p>waiting....</p>;
   }
   if (!data) {
-    return <Link href="/login">Login</Link>;
+    return (
+      <Link href="/login" className={buttonVariants()}>
+        Login
+      </Link>
+    );
   }
 
   return (
-    <div>
-      <pre>{JSON.stringify(data, null, 2)}</pre>
-      <Button
-        onClick={async () => {
-          await authClient.signOut();
-        }}
-      >
-        Log out
-      </Button>
-    </div>
+    <Card className="max-w-md">
+      <CardHeader>
+        <CardTitle className="text-lg md:text-xl">{data.user.name}</CardTitle>
+      </CardHeader>
+      <CardContent>{data.user.email}</CardContent>
+    </Card>
   );
 }
