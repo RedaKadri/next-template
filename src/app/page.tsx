@@ -11,7 +11,7 @@ export default function Home() {
     return <p>waiting....</p>;
   }
   if (!data) {
-    return <Link href="/sign-in">Login</Link>;
+    return <Link href="/login">Login</Link>;
   }
 
   return (

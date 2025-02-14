@@ -1,84 +1,95 @@
 "use client";
 
-import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
 import { toast } from "sonner";
+import { z } from "zod";
 
+import { RingResizeSpinner } from "@/components/icons/spinners";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
-import { PasswordInput } from "@/components/ui/password-input";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
 import { authClient } from "@/lib/auth-client";
+import { ResetPasswordSchema } from "@/types";
 
 export default function ResetPassword() {
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
+  const searchParams = useSearchParams();
 
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    setIsSubmitting(true);
-    const res = await authClient.resetPassword({
-      newPassword: password,
-      token: new URLSearchParams(window.location.search).get("token")!,
-    });
-    if (res.error) {
-      toast.error(res.error.message);
+  const token = searchParams.get("token");
+
+  const form = useForm<z.infer<typeof ResetPasswordSchema>>({
+    resolver: zodResolver(ResetPasswordSchema),
+    defaultValues: {
+      password: "",
+      password_confirmation: "",
+    },
+  });
+
+  async function resetPassword(values: z.infer<typeof ResetPasswordSchema>) {
+    if (!token) {
+      toast.error("Invalid or missing reset password token");
+      return;
     }
-    setIsSubmitting(false);
-    router.push("/sign-in");
+    await authClient.resetPassword({
+      newPassword: values.password,
+      token,
+      fetchOptions: {
+        onSuccess: () => {
+          router.push("/login");
+        },
+        onError: (ctx) => {
+          console.log(ctx);
+          toast.error(ctx.error.message);
+        },
+      },
+    });
   }
   return (
-    <div className="flex min-h-[calc(100vh-10rem)] flex-col items-center justify-center">
-      <Card className="w-[350px]">
-        <CardHeader>
-          <CardTitle>Reset password</CardTitle>
-          <CardDescription>
-            Enter new password and confirm it to reset your password
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit}>
-            <div className="grid w-full items-center gap-2">
-              <div className="flex flex-col space-y-1.5">
-                <Label htmlFor="email">New password</Label>
-                <PasswordInput
-                  id="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  autoComplete="password"
-                  placeholder="Password"
-                />
-              </div>
-              <div className="flex flex-col space-y-1.5">
-                <Label htmlFor="email">Confirm password</Label>
-                <PasswordInput
-                  id="password"
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  autoComplete="password"
-                  placeholder="Password"
-                />
-              </div>
-            </div>
-            <Button
-              className="mt-4 w-full"
-              type="submit"
-              disabled={isSubmitting}
-            >
-              {isSubmitting ? "Resetting..." : "Reset password"}
+    <Card>
+      <CardHeader>
+        <CardTitle>Reset password</CardTitle>
+        <CardDescription>Enter new password and confirm it to reset your password</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(resetPassword)} className="space-y-5">
+            <FormField
+              control={form.control}
+              name="password"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Password</FormLabel>
+                  <FormControl>
+                    <Input placeholder="password" type="password" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="password_confirmation"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Confirm Password</FormLabel>
+                  <FormControl>
+                    <Input placeholder="password" type="password" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <Button type="submit" disabled={form.formState.isSubmitting} className="w-full">
+              {form.formState.isSubmitting && <RingResizeSpinner />}
+              <span>Rest password</span>
             </Button>
           </form>
-        </CardContent>
-      </Card>
-    </div>
+        </Form>
+      </CardContent>
+    </Card>
   );
 }

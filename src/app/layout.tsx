@@ -18,14 +18,16 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className="h-screen antialiased">
+      <body className="antialiased">
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
           enableSystem
           disableTransitionOnChange
         >
-          {children}
+          <main className="mx-auto flex h-svh w-[90%] items-center justify-center">
+            {children}
+          </main>
           <Toaster richColors />
         </ThemeProvider>
       </body>
