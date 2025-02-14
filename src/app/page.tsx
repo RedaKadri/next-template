@@ -3,10 +3,10 @@
 import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
-import { signOut, useSession } from "@/lib/auth-client";
+import authClient from "@/lib/auth-client";
 
 export default function Home() {
-  const { data, isPending } = useSession();
+  const { data, isPending } = authClient.useSession();
   if (isPending) {
     return <p>waiting....</p>;
   }
@@ -19,7 +19,7 @@ export default function Home() {
       <pre>{JSON.stringify(data, null, 2)}</pre>
       <Button
         onClick={async () => {
-          await signOut();
+          await authClient.signOut();
         }}
       >
         Log out

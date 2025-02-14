@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
-import { Toaster } from "sonner";
-
+import Header from "@/components/header";
+import { Toaster } from "@/components/ui/sonner";
 import { ThemeProvider } from "@/components/ui/theme/theme-provider";
 
 import "./globals.css";
@@ -18,17 +18,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className="antialiased">
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-        >
-          <main className="mx-auto flex h-svh w-[90%] items-center justify-center">
-            {children}
-          </main>
-          <Toaster richColors />
+      <body className="flex h-screen flex-col antialiased">
+        <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
+          <Header />
+          <main className="mx-auto flex w-[90%] flex-grow items-center justify-center">{children}</main>
+          <Toaster />
         </ThemeProvider>
       </body>
     </html>
